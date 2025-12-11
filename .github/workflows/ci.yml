@@ -28,6 +28,6 @@ jobs:
       run: bundle exec rspec
     - name: Upload coverage to Codecov
       if: matrix.ruby-version == '3.4'
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         fail_ci_if_error: false
