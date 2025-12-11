@@ -1,0 +1,61 @@
+# <%= data['info']['title'] %>
+
+<% if data['info']['description'] %>
+<%= data['info']['description'] %>
+
+<% end %>
+**Version**: <%= data['info']['version'] %>
+<% if data['servers'] && !data['servers'].empty? %>
+**Base URL**: <%= data['servers'][0]['url'] %>
+<% end %>
+
+## Table of Contents
+
+- [Endpoints](#endpoints)
+<% data['paths']&.each do |path, methods| %>
+  <% methods.each_key do |method| %>
+    <% next if method.start_with?('$') %>
+    <% anchor = "#{method}-#{path}".downcase.gsub(/[^a-z0-9\s-]/, '').gsub(/\s+/, '-') %>
+  - [<%= method.upcase %> <%= path %>](#<%= anchor %>)
+  <% end %>
+<% end %>
+<% if data['components'] && data['components']['schemas'] %>
+- [Schemas](#schemas)
+  <% data['components']['schemas'].each_key do |schema_name| %>
+    <% anchor = schema_name.downcase.gsub(/[^a-z0-9\s-]/, '').gsub(/\s+/, '-') %>
+  - [<%= schema_name %>](#<%= anchor %>)
+  <% end %>
+<% end %>
+
+## Endpoints
+
+<% data['paths']&.each do |path, methods| %>
+  <% methods.each do |method, details| %>
+    <% next if method.start_with?('$') %>
+<%= formatter.format_endpoint(path, method, details) %>
+
+  <% end %>
+<% end %>
+<% if data['components'] && data['components']['schemas'] %>
+
+## Schemas
+
+  <% data['components']['schemas'].each do |schema_name, schema| %>
+### <%= schema_name %>
+
+    <% if schema['description'] %>
+<%= schema['description'] %>
+
+    <% end %>
+<%= formatter.format_schema(schema) %>
+
+    <% if schema['example'] %>
+**Example**:
+
+```json
+<%= JSON.pretty_generate(schema['example']) %>
+```
+
+    <% end %>
+  <% end %>
+<% end %>
